@@ -1,6 +1,9 @@
 ﻿using System.Collections.ObjectModel;
+using Microsoft.EntityFrameworkCore;
 using paperhands.Command;
 using paperhands.Model;
+using paperhands.Model.Context;
+using paperhands.Model.Entities;
 
 namespace paperhands.ViewModel;
 
@@ -8,49 +11,74 @@ public class ConfigurationViewModel : ViewModelBase
 {
     private readonly MainWindowViewModel? _mainWindowViewModel;
 
-    private Question? _selectedQuestion;
+    private Book? _selectedBook;
+    private BookstoreDbContext _dbContext => _mainWindowViewModel.dbContext;
+
+    public ObservableCollection<Book> Books { get; set; }
+    public ObservableCollection<Inventory> Inventories { get; set; }
+    public ObservableCollection<Publisher> Publishers { get; set; }
+    public ObservableCollection<Author> Authors { get; set; }
+    public ObservableCollection<LanguagesLookup> Languages { get; set; }
+    public ObservableCollection<Review> Reviews { get; set; }
+    public ObservableCollection<Store> Stores { get; set; }
+    public ObservableCollection<Genre> Genres { get; set; }
+
 
     public ConfigurationViewModel(MainWindowViewModel? mainWindowViewModel)
     {
-        AddQuestionCommand = new DelegateCommand(AddQuestion);
-        RemoveQuestionCommand = new DelegateCommand(RemoveQuestion);
+        AddBookCommand = new DelegateCommand(AddBook);
+        RemoveBookCommand = new DelegateCommand(RemoveBook);
 
         _mainWindowViewModel = mainWindowViewModel;
-        Difficulties = new ObservableCollection<Difficulty>(Enum.GetValues(typeof(Difficulty)).Cast<Difficulty>());
+
+        //TODO: add control if is db connected
+        Books = new ObservableCollection<Book>(_dbContext.Books
+            .Include(b => b.Inventories)
+            .Include(b => b.Authors)
+            .Include(b => b.Publisher)
+            .ToList());
+
+        Inventories = new ObservableCollection<Inventory>(_dbContext.Inventories
+            .Include(b => b.Store)
+            .ToList());
+
+        //Authors = new ObservableCollection<Author>(_dbContext.Authors.ToList());
+        //Stores = new ObservableCollection<Store>(_dbContext.Stores.ToList());
+        Genres = new ObservableCollection<Genre>(_dbContext.Genres.ToList());
+        //Publishers = new ObservableCollection<Publisher>(_dbContext.Publishers.ToList());
+        Languages = new ObservableCollection<LanguagesLookup>(_dbContext.LanguagesLookups.ToList());
+        Reviews = new ObservableCollection<Review>(_dbContext.Reviews.ToList());
     }
 
-    public DelegateCommand AddQuestionCommand { get; }
-    public DelegateCommand RemoveQuestionCommand { get; }
-    public ObservableCollection<QuestionPackViewModel>? Packs => _mainWindowViewModel?.Packs;
-    public ObservableCollection<Difficulty> Difficulties { get; }
-    public QuestionPackViewModel? ActivePack => _mainWindowViewModel?.ActivePack;
+    public DelegateCommand AddBookCommand { get; }
+    public DelegateCommand RemoveBookCommand { get; }
 
-    public Question? SelectedQuestion
+    public Book? SelectedBook
     {
-        get => _selectedQuestion;
+        get => _selectedBook;
         set
         {
-            _selectedQuestion = value;
+            _selectedBook = value;
             RaisePropertyChanged();
         }
     }
 
-    public void AutoSelectFirstQuestion()
+    public void AddBook(object obj)
     {
-        if (ActivePack != null) SelectedQuestion = ActivePack.Questions.FirstOrDefault();
-    }
-
-
-    public void AddQuestion(object obj)
-    {
-        ActivePack.Questions.Insert(0, new Question("New Question", "", "", "", ""));
-        SelectedQuestion = ActivePack.Questions.FirstOrDefault();
+        //ActivePack.Questions.Insert(0, new Question("New Question", "", "", "", ""));
+        //SelectedBook = ActivePack.Questions.FirstOrDefault();
         _mainWindowViewModel.ReloadCurrentView();
     }
 
-    public void RemoveQuestion(object obj)
+    public void RemoveBook(object obj)
     {
-        ActivePack.Questions.Remove(SelectedQuestion);
-        SelectedQuestion = ActivePack.Questions.FirstOrDefault();
+        //ActivePack.Questions.Remove(SelectedBook);
+        //SelectedBook = ActivePack.Questions.FirstOrDefault();
+    }
+
+    public void MoveBook(object obj)
+    {
+        //ActivePack.Questions.Remove(SelectedBook);
+        //SelectedBook = ActivePack.Questions.FirstOrDefault();
     }
 }

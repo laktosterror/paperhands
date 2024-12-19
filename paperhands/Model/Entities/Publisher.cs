@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace paperhands.Entities;
+namespace paperhands.Model.Entities;
 
 public partial class Publisher
 {

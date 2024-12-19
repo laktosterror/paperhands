@@ -5,9 +5,6 @@ using Wpf.Ui;
 
 namespace paperhands;
 
-/// <summary>
-///     Interaction logic for MainWindow.xaml
-/// </summary>
 public partial class MainWindow : Window
 {
     public MainWindow()
@@ -35,14 +32,8 @@ public partial class MainWindow : Window
         }
     }
 
-    private void Window_MouseDown(object sender, MouseButtonEventArgs e)
-    {
-        var viewModel = (MainWindowViewModel)DataContext;
-        viewModel.CollapsibleMenuVisibility = Visibility.Collapsed;
-    }
-
-    private void CollapsibleMenuView_MouseDown(object sender, MouseButtonEventArgs e)
-    {
-        e.Handled = true;
-    }
+    //private void Window_MouseDown(object sender, MouseButtonEventArgs e)
+    //{
+    //    var viewModel = (MainWindowViewModel)DataContext;
+    //}
 }

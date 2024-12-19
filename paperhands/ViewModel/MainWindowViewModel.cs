@@ -1,39 +1,34 @@
 ﻿using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
+using Microsoft.EntityFrameworkCore;
+using System.Windows.Threading;
 using paperhands.Command;
 using paperhands.Model;
+using paperhands.Model.Context;
 using paperhands.View;
 using Wpf.Ui;
 using Wpf.Ui.Controls;
+using System.Windows.Documents;
 
 namespace paperhands.ViewModel;
 
 public class MainWindowViewModel : ViewModelBase
 {
-    private QuestionPackViewModel? _activePack;
-    private Visibility _collapsibleMenuVisibility;
     private UserControl? _currentView;
+    private bool PreviousIsDBConnectedState;
+    public bool IsDBConnected = true;
+    public BookstoreDbContext dbContext;
 
     public MainWindowViewModel(ISnackbarService snackbarService)
     {
         this.snackbarService = snackbarService;
 
-        FileReader = new FileReader(@"./data.json", this);
-        var loadedPacks = FileReader.ReadFromFileAsync();
-
+        dbContext = new BookstoreDbContext();
 
         ShowImporterViewCommand = new DelegateCommand(ShowImporterView);
-        ShowPlayViewCommand = new DelegateCommand(ShowPlayView);
         ShowConfigurationViewCommand = new DelegateCommand(ShowConfigurationView);
         ExitApplicationCommand = new DelegateCommand(ExitApplication);
-        ShowMenuCommand = new DelegateCommand(ToggleMenu);
-        AddPackCommand = new DelegateCommand(AddPack);
-        RemovePackCommand = new DelegateCommand(RemovePack);
-        SetActivePackCommand = new DelegateCommand(SetActivePack);
-
-        Packs = loadedPacks.GetAwaiter().GetResult();
-        ActivePack = Packs.FirstOrDefault();
 
         ImporterViewModel = new ImporterViewModel(this);
         ImporterView = new ImporterView(ImporterViewModel);
@@ -41,33 +36,23 @@ public class MainWindowViewModel : ViewModelBase
         ConfigurationViewModel = new ConfigurationViewModel(this);
         ConfigurationView = new ConfigurationView(ConfigurationViewModel);
 
-        PlayerViewModel = new PlayerViewModel(this);
-        PlayerView = new PlayerView(PlayerViewModel);
+        CurrentView = ConfigurationView;
 
-        CollapsibleMenuVisibility = Visibility.Collapsed;
-        CurrentView = PlayerView;
+        ConnectionTimer = new DispatcherTimer();
+        ConnectionTimer.Interval = TimeSpan.FromSeconds(10);
+        ConnectionTimer.Tick += ConnectionTick;
+        ConnectionTimer.Start();
     }
 
     public ISnackbarService snackbarService { get; set; }
-
     public DelegateCommand ShowImporterViewCommand { get; }
-    public DelegateCommand ShowPlayViewCommand { get; }
     public DelegateCommand ShowConfigurationViewCommand { get; }
     public DelegateCommand ExitApplicationCommand { get; }
-    public DelegateCommand ShowMenuCommand { get; }
-    public DelegateCommand AddPackCommand { get; }
-    public DelegateCommand RemovePackCommand { get; }
-    public DelegateCommand SetActivePackCommand { get; }
-    public ObservableCollection<QuestionPackViewModel> Packs { get; set; }
-    public FileReader FileReader { get; set; }
-    public OpenTriviaClient? OpenTriviaClient { get; set; }
-
     public ImporterViewModel ImporterViewModel { get; set; }
     public ImporterView ImporterView { get; }
     public ConfigurationViewModel ConfigurationViewModel { get; set; }
     public ConfigurationView ConfigurationView { get; }
-    public PlayerViewModel? PlayerViewModel { get; set; }
-    public PlayerView PlayerView { get; }
+    public DispatcherTimer ConnectionTimer { get; }
 
     public UserControl CurrentView
     {
@@ -79,110 +64,42 @@ public class MainWindowViewModel : ViewModelBase
         }
     }
 
-    public Visibility CollapsibleMenuVisibility
+    private void ConnectionTick(object sender, EventArgs e)
     {
-        get => _collapsibleMenuVisibility;
-        set
-        {
-            _collapsibleMenuVisibility = value;
-            RaisePropertyChanged();
-        }
+        CheckDBConnection();
+
+        //TODO: if (IsDBConnected && ConfigurationViewModel.Books == null) LoadCategoriesAsync();
+
+        if (IsDBConnected && !PreviousIsDBConnectedState)
+            ShowSuccessSnackbarMessage("Connected", "You are connected to the database again!");
+
+        if (!IsDBConnected && PreviousIsDBConnectedState)
+            ShowErrorSnackbarMessage("Disconnected", "You are not connected to the database!");
     }
 
-    public QuestionPackViewModel? ActivePack
+    private void CheckDBConnection()
     {
-        get => _activePack;
-        set
+        if (dbContext.Database.CanConnect())
         {
-            _activePack = value;
-            RaisePropertyChanged();
-
-            ReloadCurrentView();
+            PreviousIsDBConnectedState = IsDBConnected;
+            IsDBConnected = true;
         }
-    }
-
-
-    private void SetActivePack(object obj)
-    {
-        if (obj is QuestionPackViewModel selectedPack) ActivePack = selectedPack;
+        else
+        {
+            PreviousIsDBConnectedState = IsDBConnected;
+            IsDBConnected = false;
+        }
     }
 
     private void ShowImporterView(object obj)
     {
-        PlayerViewModel.Timer.Stop();
-
         CurrentView = new ImporterView(ImporterViewModel);
-    }
-
-    private void ShowPlayView(object obj)
-    {
-        PlayerViewModel = new PlayerViewModel(this);
-        CurrentView = new PlayerView(PlayerViewModel);
-    }
-
-    public void ShowResultsView()
-    {
-        PlayerViewModel.Timer.Stop();
-
-        CurrentView = new ResultsView(PlayerViewModel);
     }
 
     private void ShowConfigurationView(object obj)
     {
-        PlayerViewModel.Timer.Stop();
-
         ConfigurationViewModel = new ConfigurationViewModel(this);
         CurrentView = new ConfigurationView(ConfigurationViewModel);
-        ConfigurationViewModel.AutoSelectFirstQuestion();
-    }
-
-    public void ReloadCurrentView()
-    {
-        switch (CurrentView)
-        {
-            case PlayerView playerView:
-                ShowPlayView(null);
-                break;
-            case ConfigurationView configurationView:
-                ShowConfigurationView(null);
-                break;
-            case ImporterView importerView:
-                ShowImporterView(null);
-                break;
-            default:
-                ShowPlayView(null);
-                break;
-        }
-    }
-
-    private void ToggleMenu(object obj)
-    {
-        if (CollapsibleMenuVisibility == Visibility.Visible)
-            CollapsibleMenuVisibility = Visibility.Collapsed;
-        else
-            CollapsibleMenuVisibility = Visibility.Visible;
-    }
-
-    private void ExitApplication(object obj)
-    {
-        FileReader.WriteToFileAsync(Packs).GetAwaiter();
-        Application.Current.Shutdown();
-    }
-
-    private void RemovePack(object obj)
-    {
-        Packs.Remove(ActivePack);
-        ActivePack = Packs.FirstOrDefault();
-    }
-
-    private void AddPack(object obj)
-    {
-        var newPackModel = new QuestionPack("New Question Pack");
-        var newPack = new QuestionPackViewModel(newPackModel);
-        newPack.Questions.Add(new Question("Why is the sky so blue?", "Dont worry about it!", "Blue is not a color!",
-            "What about the colorblind?", "Something with light."));
-        Packs.Insert(0, newPack);
-        ActivePack = Packs.FirstOrDefault();
     }
 
     public void ShowSuccessSnackbarMessage(string title, string message)
@@ -207,5 +124,25 @@ public class MainWindowViewModel : ViewModelBase
             message,
             ControlAppearance.Danger,
             new SymbolIcon(SymbolRegular.Warning24), TimeSpan.FromSeconds(5));
+    }
+    public void ReloadCurrentView()
+    {
+        switch (CurrentView)
+        {
+            case ConfigurationView configurationView:
+                ShowConfigurationView(null);
+                break;
+            case ImporterView importerView:
+                ShowImporterView(null);
+                break;
+            default:
+                ShowConfigurationView(null);
+                break;
+        }
+    }
+    private void ExitApplication(object obj)
+    {
+        //FileReader.WriteToFileAsync(Packs).GetAwaiter();
+        Application.Current.Shutdown();
     }
 }

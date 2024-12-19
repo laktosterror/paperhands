@@ -1,17 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
-using paperhands.Entities;
+using paperhands.Model.Entities;
 
-namespace paperhands.Context;
+namespace paperhands.Model.Context;
 
-public partial class MyDbContext : DbContext
+public partial class BookstoreDbContext : DbContext
 {
-    public MyDbContext()
+    public BookstoreDbContext()
     {
     }
 
-    public MyDbContext(DbContextOptions<MyDbContext> options)
+    public BookstoreDbContext(DbContextOptions<BookstoreDbContext> options)
         : base(options)
     {
     }
