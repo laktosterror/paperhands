@@ -10,6 +10,7 @@ using paperhands.View;
 using Wpf.Ui;
 using Wpf.Ui.Controls;
 using System.Windows.Documents;
+using paperhands.Model.Entities;
 
 namespace paperhands.ViewModel;
 
@@ -17,7 +18,7 @@ public class MainWindowViewModel : ViewModelBase
 {
     private UserControl? _currentView;
     private bool PreviousIsDBConnectedState;
-    public bool IsDBConnected = true;
+    public bool IsDBConnected;
     public BookstoreDbContext dbContext;
 
     public MainWindowViewModel(ISnackbarService snackbarService)
@@ -28,10 +29,14 @@ public class MainWindowViewModel : ViewModelBase
 
         ShowImporterViewCommand = new DelegateCommand(ShowImporterView);
         ShowConfigurationViewCommand = new DelegateCommand(ShowConfigurationView);
+        ShowAuthorViewCommand = new DelegateCommand(ShowAuthorView);
         ExitApplicationCommand = new DelegateCommand(ExitApplication);
 
         ImporterViewModel = new ImporterViewModel(this);
         ImporterView = new ImporterView(ImporterViewModel);
+
+        AuthorViewModel = new AuthorViewModel(this);
+        AuthorView = new AuthorView(AuthorViewModel);
 
         ConfigurationViewModel = new ConfigurationViewModel(this);
         ConfigurationView = new ConfigurationView(ConfigurationViewModel);
@@ -39,7 +44,7 @@ public class MainWindowViewModel : ViewModelBase
         CurrentView = ConfigurationView;
 
         ConnectionTimer = new DispatcherTimer();
-        ConnectionTimer.Interval = TimeSpan.FromSeconds(10);
+        ConnectionTimer.Interval = TimeSpan.FromSeconds(3);
         ConnectionTimer.Tick += ConnectionTick;
         ConnectionTimer.Start();
     }
@@ -47,9 +52,12 @@ public class MainWindowViewModel : ViewModelBase
     public ISnackbarService snackbarService { get; set; }
     public DelegateCommand ShowImporterViewCommand { get; }
     public DelegateCommand ShowConfigurationViewCommand { get; }
+    public DelegateCommand ShowAuthorViewCommand { get; }
     public DelegateCommand ExitApplicationCommand { get; }
     public ImporterViewModel ImporterViewModel { get; set; }
     public ImporterView ImporterView { get; }
+    public AuthorViewModel AuthorViewModel { get; set; }
+    public AuthorView AuthorView { get; }
     public ConfigurationViewModel ConfigurationViewModel { get; set; }
     public ConfigurationView ConfigurationView { get; }
     public DispatcherTimer ConnectionTimer { get; }
@@ -64,22 +72,25 @@ public class MainWindowViewModel : ViewModelBase
         }
     }
 
-    private void ConnectionTick(object sender, EventArgs e)
+    private async void ConnectionTick(object sender, EventArgs e)
     {
-        CheckDBConnection();
+        await CheckDBConnection();
 
-        //TODO: if (IsDBConnected && ConfigurationViewModel.Books == null) LoadCategoriesAsync();
+        if (IsDBConnected && ConfigurationViewModel.Books == null)
+        {
+            ReloadCurrentView();
+        }
 
-        if (IsDBConnected && !PreviousIsDBConnectedState)
+        else if(IsDBConnected && !PreviousIsDBConnectedState)
             ShowSuccessSnackbarMessage("Connected", "You are connected to the database again!");
 
-        if (!IsDBConnected && PreviousIsDBConnectedState)
+        else if(!IsDBConnected && PreviousIsDBConnectedState)
             ShowErrorSnackbarMessage("Disconnected", "You are not connected to the database!");
     }
 
-    private void CheckDBConnection()
+    private async Task CheckDBConnection()
     {
-        if (dbContext.Database.CanConnect())
+        if (await dbContext.Database.CanConnectAsync())
         {
             PreviousIsDBConnectedState = IsDBConnected;
             IsDBConnected = true;
@@ -93,6 +104,7 @@ public class MainWindowViewModel : ViewModelBase
 
     private void ShowImporterView(object obj)
     {
+        ImporterViewModel = new ImporterViewModel(this);
         CurrentView = new ImporterView(ImporterViewModel);
     }
 
@@ -100,6 +112,11 @@ public class MainWindowViewModel : ViewModelBase
     {
         ConfigurationViewModel = new ConfigurationViewModel(this);
         CurrentView = new ConfigurationView(ConfigurationViewModel);
+    }
+    private void ShowAuthorView(object obj)
+    {
+        AuthorViewModel = new AuthorViewModel(this);
+        CurrentView = new AuthorView(AuthorViewModel);
     }
 
     public void ShowSuccessSnackbarMessage(string title, string message)
@@ -135,6 +152,9 @@ public class MainWindowViewModel : ViewModelBase
             case ImporterView importerView:
                 ShowImporterView(null);
                 break;
+            case AuthorView authorView:
+                ShowAuthorView(null);
+                break;
             default:
                 ShowConfigurationView(null);
                 break;
@@ -142,7 +162,7 @@ public class MainWindowViewModel : ViewModelBase
     }
     private void ExitApplication(object obj)
     {
-        //FileReader.WriteToFileAsync(Packs).GetAwaiter();
+        dbContext.SaveChanges();
         Application.Current.Shutdown();
     }
 }

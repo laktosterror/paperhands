@@ -8,16 +8,23 @@
              xmlns:viewmodel="clr-namespace:paperhands.ViewModel"
              d:DataContext="{d:DesignInstance Type=viewmodel:ConfigurationViewModel}"
              d:DesignHeight="515" d:DesignWidth="835">
-    
     <Grid>
         <Grid Grid.Row="1">
+            
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
-            <ui:ListView ItemsSource="{Binding Books}"
-                         SelectedItem="{Binding SelectedBook, Mode=TwoWay}">
+
+            <Border CornerRadius="5" Background="#504945">
+                
+            <ListView ItemsSource="{Binding Books}"
+                      Background="#504945"
+                      Foreground="#e7d7ad"
+                      BorderThickness="0"
+                      Margin="5"
+                      SelectedItem="{Binding SelectedBook, Mode=TwoWay}">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <StackPanel Margin="2">
@@ -26,9 +33,10 @@
                     </DataTemplate>
                 </ListBox.ItemTemplate>
 
-            </ui:ListView>
+            </ListView>
+            </Border>
             <Grid Grid.Column="1">
-                <StackPanel Margin="10 0 10 0">
+                <StackPanel Margin="10 0 0 0">
                     <TextBlock Text="Book Information"
                                VerticalAlignment="Top"
                                HorizontalAlignment="Center"
@@ -85,7 +93,6 @@
 
                             <ui:DataGrid ItemsSource="{Binding SelectedBook.Authors}" 
                                           AutoGenerateColumns="False" 
-                                         FontFamily="Sitka Small"
                                           CanUserAddRows="False" 
                                           CanUserResizeColumns="False" 
                                           HorizontalAlignment="Stretch" 
@@ -121,11 +128,10 @@
                                       CanUserResizeColumns="False" 
                                       HorizontalAlignment="Stretch" 
                                       VerticalAlignment="Stretch"
-                                     FontFamily="Sitka Small"
                                       ColumnWidth="*" 
                                       IsReadOnly="True"
                                       HeadersVisibility="Column"
-                                      Height="180"
+                                      Height="173"
                                       Background="#504945"
                                       Foreground="#e7d7ad">
                             <DataGrid.Columns>

@@ -31,23 +31,27 @@ public class ConfigurationViewModel : ViewModelBase
 
         _mainWindowViewModel = mainWindowViewModel;
 
-        //TODO: add control if is db connected
-        Books = new ObservableCollection<Book>(_dbContext.Books
-            .Include(b => b.Inventories)
-            .Include(b => b.Authors)
-            .Include(b => b.Publisher)
-            .ToList());
+        if (_mainWindowViewModel.IsDBConnected)
+        {
+            //TODO: add control if is db connected
+            Books = new ObservableCollection<Book>(_dbContext.Books
+                .Include(b => b.Inventories)
+                .Include(b => b.Authors)
+                .Include(b => b.Publisher)
+                .ToList());
 
-        Inventories = new ObservableCollection<Inventory>(_dbContext.Inventories
-            .Include(b => b.Store)
-            .ToList());
+            Inventories = new ObservableCollection<Inventory>(_dbContext.Inventories
+                .Include(b => b.Store)
+                .ToList());
 
-        //Authors = new ObservableCollection<Author>(_dbContext.Authors.ToList());
-        //Stores = new ObservableCollection<Store>(_dbContext.Stores.ToList());
-        Genres = new ObservableCollection<Genre>(_dbContext.Genres.ToList());
-        //Publishers = new ObservableCollection<Publisher>(_dbContext.Publishers.ToList());
-        Languages = new ObservableCollection<LanguagesLookup>(_dbContext.LanguagesLookups.ToList());
-        Reviews = new ObservableCollection<Review>(_dbContext.Reviews.ToList());
+            //Authors = new ObservableCollection<Author>(_dbContext.Authors.ToList());
+            //Stores = new ObservableCollection<Store>(_dbContext.Stores.ToList());
+            Genres = new ObservableCollection<Genre>(_dbContext.Genres.ToList());
+            //Publishers = new ObservableCollection<Publisher>(_dbContext.Publishers.ToList());
+            Languages = new ObservableCollection<LanguagesLookup>(_dbContext.LanguagesLookups.ToList());
+            Reviews = new ObservableCollection<Review>(_dbContext.Reviews.ToList());
+
+        }
     }
 
     public DelegateCommand AddBookCommand { get; }

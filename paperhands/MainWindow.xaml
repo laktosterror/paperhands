@@ -13,7 +13,7 @@
         Width="930"
         WindowStyle="None"
         ResizeMode="NoResize"
-        Background="#242424"
+        Background="Transparent"
         AllowsTransparency="True"
         >
 
@@ -21,48 +21,32 @@
             CornerRadius="0"
             BorderThickness="3"
             BorderBrush="#689d6a"
-            Margin="0">
+            Margin="5">
         <Border.Effect>
-            <DropShadowEffect BlurRadius="5"
+            <DropShadowEffect BlurRadius="10"
                               Direction="-90"
                               RenderingBias="Quality"
-                              ShadowDepth="0.5" />
+                              ShadowDepth="1" />
+
         </Border.Effect>
 
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="75" />
-                <RowDefinition Height="*"/>
+                <RowDefinition/>
+                <RowDefinition Height="12"/>
                 <RowDefinition Height="75"/>
             </Grid.RowDefinitions>
 
             <TextBlock Text="Paperhands"
                        VerticalAlignment="Center"
                        HorizontalAlignment="Left"
-                       Foreground="#e7d7ad"
+                       Foreground="#ed8346"
                        FontSize="46" FontFamily="Sitka Small" Margin="15,0,0,0" />
 
-            <Grid Grid.Row="0" Grid.Column="2" x:Name="ContentGrid" Background="Transparent" />
+            <Grid Grid.Row="0" x:Name="ContentGrid" Background="Transparent" />
 
-            <Border x:Name="CollapsibleMenuView"
-                    Grid.Row="0"
-                    Grid.Column="2"
-                    Background="LightGray"
-                    CornerRadius="5"
-                    Margin="10 10 75 0"
-                    Height="55"
-                    VerticalAlignment="Top"
-                    Visibility="Collapsed"
->
-                <Border.Effect>
-                    <DropShadowEffect BlurRadius="20"
-                                      Direction="-90"
-                                      RenderingBias="Quality"
-                                      ShadowDepth="1" />
-                </Border.Effect>
-            </Border>
-
-            <Grid Grid.Row="0" Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center">
+            <Grid HorizontalAlignment="Left" VerticalAlignment="Center" Margin="839,0,0,0">
                 <StackPanel HorizontalAlignment="Right">
                     <ui:Button Margin="10"
                                BorderThickness="0"
@@ -80,7 +64,17 @@
                 </StackPanel>
             </Grid>
 
-            <Grid Grid.Row="3" Grid.Column="1">
+            <Grid Grid.Row="1" Grid.RowSpan="2" >
+                <Border CornerRadius="2" Background="#232323" Margin="10 0 10 0" BorderThickness="2"
+                        BorderBrush="#689d6a">
+                    <ContentControl x:Name="MainContent" Margin="10" Content="{Binding CurrentView}" />
+                </Border>
+
+                <ui:SnackbarPresenter x:Name="SnackbarPresenter"/>
+
+            </Grid>
+
+            <Grid Grid.Row="3">
                 <DockPanel>
                     <DockPanel VerticalAlignment="Top" HorizontalAlignment="Left">
                         <ui:Button ToolTip="Inventory"
@@ -140,7 +134,7 @@
                                    PressedForeground="#e7d7ad"
                                    Icon="{ui:SymbolIcon Symbol=ArrowMove20}"
                                    Command="{Binding ShowImporterViewCommand}" />
-                        
+
                     </DockPanel>
                     <DockPanel HorizontalAlignment="Right">
                         <ui:Button ToolTip="Add Author"
@@ -160,22 +154,14 @@
                                    MouseOverBackground="#4a4442"
                                    PressedForeground="#e7d7ad"
                                    Icon="{ui:SymbolIcon Symbol=Pen20}"
-                                   Command="{Binding ShowConfigurationViewCommand}" />
+                                   Command="{Binding ShowAuthorViewCommand}" />
 
 
                     </DockPanel>
                 </DockPanel>
             </Grid>
 
-            <Grid Grid.Row="1" Grid.Column="2">
-                <Border CornerRadius="2" Background="#232323" Margin="10 0 10 0" BorderThickness="2"
-                        BorderBrush="#689d6a">
-                    <ContentControl x:Name="MainContent" Margin="10" Content="{Binding CurrentView}" />
-                </Border>
 
-                <ui:SnackbarPresenter x:Name="SnackbarPresenter"/>
-
-            </Grid>
         </Grid>
     </Border>
 </Window>
