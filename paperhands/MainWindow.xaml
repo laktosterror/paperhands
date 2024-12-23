@@ -9,7 +9,7 @@
         d:DataContext="{d:DesignInstance Type=viewmodel:MainWindowViewModel}"
         mc:Ignorable="d"
         Title="MainWindow"
-        Height="610"
+        Height="680"
         Width="930"
         WindowStyle="None"
         ResizeMode="NoResize"
@@ -34,7 +34,6 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="75" />
                 <RowDefinition/>
-                <RowDefinition Height="12"/>
                 <RowDefinition Height="75"/>
             </Grid.RowDefinitions>
 
@@ -49,43 +48,41 @@
             <Grid HorizontalAlignment="Left" VerticalAlignment="Center" Margin="839,0,0,0">
                 <StackPanel HorizontalAlignment="Right">
                     <ui:Button Margin="10"
-                               BorderThickness="0"
+                               BorderThickness="2"
                                Appearance="Transparent"
-                               FontSize="38"
+                               FontSize="31"
                                Height="55"
                                Width="55"
                                CornerRadius="5"
                                Background="#32302f"
                                Foreground="#ed8346"
-                               MouseOverBackground="#4a4442"
+                               MouseOverBackground="Red"
                                PressedForeground="#e7d7ad"
                                Icon="{ui:SymbolIcon Symbol=ArrowExit20}"
                                Command="{Binding ExitApplicationCommand}" />
                 </StackPanel>
             </Grid>
 
-            <Grid Grid.Row="1" Grid.RowSpan="2" >
+            <Grid Grid.Row="1">
                 <Border CornerRadius="2" Background="#232323" Margin="10 0 10 0" BorderThickness="2"
                         BorderBrush="#689d6a">
                     <ContentControl x:Name="MainContent" Margin="10" Content="{Binding CurrentView}" />
                 </Border>
-
-                <ui:SnackbarPresenter x:Name="SnackbarPresenter"/>
-
+                <ui:SnackbarPresenter x:Name="SnackbarPresenter" ClipToBounds="True"/>
             </Grid>
 
             <Grid Grid.Row="3">
                 <DockPanel>
                     <DockPanel VerticalAlignment="Top" HorizontalAlignment="Left">
-                        <ui:Button ToolTip="Inventory"
+                        <ui:Button ToolTip="View Inventory"
                                    ToolTipService.InitialShowDelay="100"
                                    ToolTipService.Placement="Top"
                                    ToolTipService.HorizontalOffset="-15"
                                    ToolTipService.VerticalOffset="-15"
                                    Margin="10"
-                                   BorderThickness="0"
+                                   BorderThickness="2"
                                    Appearance="Transparent"
-                                   FontSize="38"
+                                   FontSize="31"
                                    Height="55"
                                    Width="55"
                                    CornerRadius="5"
@@ -96,15 +93,15 @@
                                    Icon="{ui:SymbolIcon Symbol=BookOpen20}"
                                    Command="{Binding ShowConfigurationViewCommand}" />
 
-                        <ui:Button ToolTip="Add Book"
+                        <ui:Button ToolTip="Manage Books"
                                    ToolTipService.InitialShowDelay="100"
                                    ToolTipService.Placement="Top"
                                    ToolTipService.HorizontalOffset="-15"
                                    ToolTipService.VerticalOffset="-15"
                                    Margin="0"
-                                   BorderThickness="0"
+                                   BorderThickness="2"
                                    Appearance="Transparent"
-                                   FontSize="38"
+                                   FontSize="31"
                                    Height="55"
                                    Width="55"
                                    CornerRadius="5"
@@ -112,8 +109,8 @@
                                    Foreground="#ed8346"
                                    MouseOverBackground="#4a4442"
                                    PressedForeground="#e7d7ad"
-                                   Icon="{ui:SymbolIcon Symbol=BookAdd20}"
-                                   Command="{Binding ShowImporterViewCommand}" >
+                                   Icon="{ui:SymbolIcon Symbol=BookToolbox20}"
+                                   Command="{Binding ShowBookViewCommand}" >
                         </ui:Button>
 
                         <ui:Button ToolTip="Move Book"
@@ -122,9 +119,9 @@
                                    ToolTipService.HorizontalOffset="-15"
                                    ToolTipService.VerticalOffset="-15"
                                    Margin="10"
-                                   BorderThickness="0"
+                                   BorderThickness="2"
                                    Appearance="Transparent"
-                                   FontSize="38"
+                                   FontSize="31"
                                    Height="55"
                                    Width="55"
                                    CornerRadius="5"
@@ -137,15 +134,15 @@
 
                     </DockPanel>
                     <DockPanel HorizontalAlignment="Right">
-                        <ui:Button ToolTip="Add Author"
+                        <ui:Button ToolTip="Manage Authors"
                                    ToolTipService.InitialShowDelay="100"
                                    ToolTipService.Placement="Top"
                                    ToolTipService.HorizontalOffset="-15"
                                    ToolTipService.VerticalOffset="-15"
                                    Margin="10"
-                                   BorderThickness="0"
+                                   BorderThickness="2"
                                    Appearance="Transparent"
-                                   FontSize="38"
+                                   FontSize="31"
                                    Height="55"
                                    Width="55"
                                    CornerRadius="5"

@@ -1,7 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using Microsoft.EntityFrameworkCore;
 using paperhands.Command;
-using paperhands.Model;
 using paperhands.Model.Context;
 using paperhands.Model.Entities;
 

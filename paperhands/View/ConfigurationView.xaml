@@ -131,7 +131,7 @@
                                       ColumnWidth="*" 
                                       IsReadOnly="True"
                                       HeadersVisibility="Column"
-                                      Height="173"
+                                      Height="243"
                                       Background="#504945"
                                       Foreground="#e7d7ad">
                             <DataGrid.Columns>

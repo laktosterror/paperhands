@@ -1,16 +1,11 @@
-﻿using System.Collections.ObjectModel;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using Microsoft.EntityFrameworkCore;
 using System.Windows.Threading;
 using paperhands.Command;
-using paperhands.Model;
 using paperhands.Model.Context;
 using paperhands.View;
 using Wpf.Ui;
 using Wpf.Ui.Controls;
-using System.Windows.Documents;
-using paperhands.Model.Entities;
 
 namespace paperhands.ViewModel;
 
@@ -19,6 +14,7 @@ public class MainWindowViewModel : ViewModelBase
     private UserControl? _currentView;
     private bool PreviousIsDBConnectedState;
     public bool IsDBConnected;
+    public bool IsDBLoadedOnce;
     public BookstoreDbContext dbContext;
 
     public MainWindowViewModel(ISnackbarService snackbarService)
@@ -28,12 +24,16 @@ public class MainWindowViewModel : ViewModelBase
         dbContext = new BookstoreDbContext();
 
         ShowImporterViewCommand = new DelegateCommand(ShowImporterView);
+        ShowBookViewCommand = new DelegateCommand(ShowBookView);
         ShowConfigurationViewCommand = new DelegateCommand(ShowConfigurationView);
         ShowAuthorViewCommand = new DelegateCommand(ShowAuthorView);
         ExitApplicationCommand = new DelegateCommand(ExitApplication);
 
         ImporterViewModel = new ImporterViewModel(this);
         ImporterView = new ImporterView(ImporterViewModel);
+
+        BookViewModel = new BookViewModel(this);
+        BookView = new BookView(BookViewModel);
 
         AuthorViewModel = new AuthorViewModel(this);
         AuthorView = new AuthorView(AuthorViewModel);
@@ -51,11 +51,14 @@ public class MainWindowViewModel : ViewModelBase
 
     public ISnackbarService snackbarService { get; set; }
     public DelegateCommand ShowImporterViewCommand { get; }
+    public DelegateCommand ShowBookViewCommand { get; }
     public DelegateCommand ShowConfigurationViewCommand { get; }
     public DelegateCommand ShowAuthorViewCommand { get; }
     public DelegateCommand ExitApplicationCommand { get; }
     public ImporterViewModel ImporterViewModel { get; set; }
     public ImporterView ImporterView { get; }
+    public BookViewModel BookViewModel { get; set; }
+    public BookView BookView { get; }
     public AuthorViewModel AuthorViewModel { get; set; }
     public AuthorView AuthorView { get; }
     public ConfigurationViewModel ConfigurationViewModel { get; set; }
@@ -76,15 +79,16 @@ public class MainWindowViewModel : ViewModelBase
     {
         await CheckDBConnection();
 
-        if (IsDBConnected && ConfigurationViewModel.Books == null)
+        if (IsDBConnected && !IsDBLoadedOnce )
         {
-            ReloadCurrentView();
+            IsDBLoadedOnce = true;
+            await ReloadCurrentView();
         }
 
-        else if(IsDBConnected && !PreviousIsDBConnectedState)
+        else if (IsDBConnected && !PreviousIsDBConnectedState)
             ShowSuccessSnackbarMessage("Connected", "You are connected to the database again!");
 
-        else if(!IsDBConnected && PreviousIsDBConnectedState)
+        else if (!IsDBConnected && PreviousIsDBConnectedState)
             ShowErrorSnackbarMessage("Disconnected", "You are not connected to the database!");
     }
 
@@ -106,6 +110,12 @@ public class MainWindowViewModel : ViewModelBase
     {
         ImporterViewModel = new ImporterViewModel(this);
         CurrentView = new ImporterView(ImporterViewModel);
+    }
+
+    private void ShowBookView(object obj)
+    {
+        BookViewModel = new BookViewModel(this);
+        CurrentView = new BookView(BookViewModel);
     }
 
     private void ShowConfigurationView(object obj)
@@ -142,7 +152,7 @@ public class MainWindowViewModel : ViewModelBase
             ControlAppearance.Danger,
             new SymbolIcon(SymbolRegular.Warning24), TimeSpan.FromSeconds(5));
     }
-    public void ReloadCurrentView()
+    public async Task ReloadCurrentView()
     {
         switch (CurrentView)
         {
@@ -154,6 +164,9 @@ public class MainWindowViewModel : ViewModelBase
                 break;
             case AuthorView authorView:
                 ShowAuthorView(null);
+                break;
+            case BookView BookView:
+                ShowBookView(null);
                 break;
             default:
                 ShowConfigurationView(null);

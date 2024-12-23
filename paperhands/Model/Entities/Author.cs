@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace paperhands.Model.Entities;
+﻿namespace paperhands.Model.Entities;
 
 public partial class Author
 {

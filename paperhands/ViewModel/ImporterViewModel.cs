@@ -1,10 +1,6 @@
 ﻿using System.Collections.ObjectModel;
-using System.Net;
-using System.Net.Http;
-using System.Windows.Threading;
 using Microsoft.EntityFrameworkCore;
 using paperhands.Command;
-using paperhands.Model;
 using paperhands.Model.Context;
 using paperhands.Model.Entities;
 
@@ -25,7 +21,7 @@ public class ImporterViewModel : ViewModelBase
     {
         get => _availableAmountInFromStore;
         set
-        { 
+        {
             _availableAmountInFromStore = value;
             RaisePropertyChanged();
 
@@ -39,7 +35,14 @@ public class ImporterViewModel : ViewModelBase
         set
         {
             _selectedBook = value;
-            AvailableAmountInFromStore = value.Inventories.Where(i => i.Isbn13 == SelectedBook.Isbn13).First().Amount;
+            try
+            {
+                AvailableAmountInFromStore = value.Inventories.Where(i => i.Isbn13 == SelectedBook.Isbn13).First().Amount;
+            }
+            catch
+            {
+                AvailableAmountInFromStore = (long)0;
+            }
             SelectedAmountOfBooks = 1;
             RaisePropertyChanged();
         }
@@ -51,9 +54,16 @@ public class ImporterViewModel : ViewModelBase
     {
         get => _selectedFromStore;
         set
-        { 
+        {
             _selectedFromStore = value;
-            AvailableAmountInFromStore = value.Inventories.Where(i => i.Isbn13 == SelectedBook.Isbn13).First().Amount;
+            try
+            {
+                AvailableAmountInFromStore = value.Inventories.Where(i => i.Isbn13 == SelectedBook.Isbn13).First().Amount;
+            }
+            catch
+            {
+                AvailableAmountInFromStore = (long)0;
+            }
             SelectedAmountOfBooks = 1;
             RaisePropertyChanged();
         }
@@ -63,8 +73,8 @@ public class ImporterViewModel : ViewModelBase
     public Store SelectedToStore
     {
         get => _selectedToStore;
-        set 
-        { 
+        set
+        {
             _selectedToStore = value;
             RaisePropertyChanged();
         }
@@ -113,6 +123,14 @@ public class ImporterViewModel : ViewModelBase
                 await _dbContext.Database.ExecuteSqlRawAsync
                     ("EXEC bookstore.dbo.MoveBook @ISBN13 = {0}, @FromStoreID = {1}, @ToStoreID = {2}, @Amount = {3};"
                     , SelectedBook.Isbn13, SelectedFromStore.Id, SelectedToStore.Id, SelectedAmountOfBooks);
+
+                Books = new ObservableCollection<Book>(_dbContext.Books
+                .Include(b => b.Inventories)
+                .Include(b => b.Authors)
+                .Include(b => b.Publisher)
+                .ToList());
+
+                Stores = new ObservableCollection<Store>(_dbContext.Stores.ToList());
 
                 SelectedBook.Inventories.First(i => i.Isbn13 == SelectedBook.Isbn13 && i.StoreId == SelectedFromStore.Id).Amount -= SelectedAmountOfBooks;
                 SelectedBook.Inventories.First(i => i.Isbn13 == SelectedBook.Isbn13 && i.StoreId == SelectedToStore.Id).Amount += SelectedAmountOfBooks;

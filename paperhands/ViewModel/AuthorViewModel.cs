@@ -1,13 +1,8 @@
 ﻿using System.Collections.ObjectModel;
-using System.Net;
-using System.Net.Http;
-using System.Windows.Threading;
 using Microsoft.EntityFrameworkCore;
 using paperhands.Command;
-using paperhands.Model;
 using paperhands.Model.Context;
 using paperhands.Model.Entities;
-using Wpf.Ui.Controls;
 
 namespace paperhands.ViewModel;
 
@@ -71,6 +66,7 @@ public class AuthorViewModel : ViewModelBase
                 _dbContext.Authors.Add(author);
                 _dbContext.SaveChanges();
                 Authors.Add(author);
+                SelectedAuthor = author;
 
                 _mainWindowViewModel.ShowSuccessSnackbarMessage("Success!", $"Created new author, change name and birthdate");
             }
@@ -95,7 +91,6 @@ public class AuthorViewModel : ViewModelBase
                 _dbContext.Authors.Remove(SelectedAuthor);
                 _dbContext.SaveChanges();
                 Authors.Remove(SelectedAuthor);
-
 
                 _mainWindowViewModel.ShowSuccessSnackbarMessage($"Success!", $"Removed {SelectedAuthor}");
             }
