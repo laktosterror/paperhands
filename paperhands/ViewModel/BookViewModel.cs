@@ -17,6 +17,7 @@ public class BookViewModel : ViewModelBase
     public ObservableCollection<Author> Authors { get; set; }
     public ObservableCollection<LanguagesLookup> Languages { get; set; }
     public ObservableCollection<Genre> Genres { get; set; }
+    public ObservableCollection<Review> Reviews { get; set; }
 
     public DelegateCommand AddBookCommand { get; }
     public DelegateCommand RemoveBookCommand { get; }
@@ -114,8 +115,10 @@ public class BookViewModel : ViewModelBase
             .ToList());
 
             Stores = new ObservableCollection<Store>(_dbContext.Stores.ToList());
+            Inventories = new ObservableCollection<Inventory>(_dbContext.Inventories.ToList());
             Languages = new ObservableCollection<LanguagesLookup>(_dbContext.LanguagesLookups.ToList());
             Genres = new ObservableCollection<Genre>(_dbContext.Genres.ToList());
+            Reviews = new ObservableCollection<Review>(_dbContext.Reviews.ToList());
 
 
 
@@ -182,14 +185,21 @@ public class BookViewModel : ViewModelBase
             try
             {
                 var itemsToRemove = _dbContext.Inventories.Where(i => i.Isbn13 == SelectedBook.Isbn13).ToList();
+                var reviewsToRemove = _dbContext.Reviews.Where(r => r.BookIsbn13 == SelectedBook.Isbn13).ToList();
 
                 if (itemsToRemove.Any())
                 {
+                    _dbContext.Authors.Where(a => a.BookIsbn13s.Any(b => b.Isbn13 == SelectedBook.Isbn13)).ToList().ForEach(a => a.BookIsbn13s.Remove(a.BookIsbn13s.First(b => b.Isbn13 == SelectedBook.Isbn13)));
                     _dbContext.Inventories.RemoveRange(itemsToRemove);
+                    _dbContext.Reviews.RemoveRange(reviewsToRemove);
                 }
 
                 _dbContext.Books.Remove(SelectedBook);
+
                 _dbContext.SaveChanges();
+
+                Authors.Where(a => a.BookIsbn13s.Any(b => b.Isbn13 == SelectedBook.Isbn13)).ToList().ForEach(a => a.BookIsbn13s.Remove(a.BookIsbn13s.First(b => b.Isbn13 == SelectedBook.Isbn13)));
+                Reviews.Where(r => r.BookIsbn13 == SelectedBook.Isbn13).ToList().ForEach(r => Reviews.Remove(r));
                 Books.Remove(SelectedBook);
 
 
