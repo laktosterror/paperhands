@@ -11,16 +11,6 @@ public class ConfigurationViewModel : ViewModelBase
     private readonly MainWindowViewModel? _mainWindowViewModel;
 
     private Book? _selectedBook;
-    private BookstoreDbContext _dbContext => _mainWindowViewModel.dbContext;
-
-    public ObservableCollection<Book> Books { get; set; }
-    public ObservableCollection<Inventory> Inventories { get; set; }
-    public ObservableCollection<Publisher> Publishers { get; set; }
-    public ObservableCollection<Author> Authors { get; set; }
-    public ObservableCollection<LanguagesLookup> Languages { get; set; }
-    public ObservableCollection<Review> Reviews { get; set; }
-    public ObservableCollection<Store> Stores { get; set; }
-    public ObservableCollection<Genre> Genres { get; set; }
 
 
     public ConfigurationViewModel(MainWindowViewModel? mainWindowViewModel)
@@ -49,9 +39,19 @@ public class ConfigurationViewModel : ViewModelBase
             //Publishers = new ObservableCollection<Publisher>(_dbContext.Publishers.ToList());
             Languages = new ObservableCollection<LanguagesLookup>(_dbContext.LanguagesLookups.ToList());
             Reviews = new ObservableCollection<Review>(_dbContext.Reviews.ToList());
-
         }
     }
+
+    private BookstoreDbContext _dbContext => _mainWindowViewModel.dbContext;
+
+    public ObservableCollection<Book> Books { get; set; }
+    public ObservableCollection<Inventory> Inventories { get; set; }
+    public ObservableCollection<Publisher> Publishers { get; set; }
+    public ObservableCollection<Author> Authors { get; set; }
+    public ObservableCollection<LanguagesLookup> Languages { get; set; }
+    public ObservableCollection<Review> Reviews { get; set; }
+    public ObservableCollection<Store> Stores { get; set; }
+    public ObservableCollection<Genre> Genres { get; set; }
 
     public DelegateCommand AddBookCommand { get; }
     public DelegateCommand RemoveBookCommand { get; }

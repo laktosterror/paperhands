@@ -20,16 +20,16 @@
             <Border CornerRadius="5" Background="#504945">
 
                 <ListView ItemsSource="{Binding Authors}"
-                   Background="#504945"
-                   Foreground="#e7d7ad"
-                   BorderThickness="0"
-                   Margin="5"
-                   SelectedItem="{Binding SelectedAuthor, Mode=TwoWay}">
+                          Background="#504945"
+                          Foreground="#e7d7ad"
+                          BorderThickness="0"
+                          Margin="5"
+                          SelectedItem="{Binding SelectedAuthor, Mode=TwoWay}">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
                             <StackPanel Margin="2">
                                 <TextBlock Text="{Binding FirstName}" Foreground="#e7d7ad" FontSize="14" Margin="2" />
-                                <TextBlock Text="{Binding LastName}"  Foreground="#e7d7ad" FontSize="14" Margin="2" />
+                                <TextBlock Text="{Binding LastName}" Foreground="#e7d7ad" FontSize="14" Margin="2" />
 
                             </StackPanel>
                         </DataTemplate>
@@ -40,50 +40,52 @@
             <Grid Grid.Column="1">
                 <StackPanel Margin="10 0 0 0">
                     <TextBlock Text="Author Information:"
-                            VerticalAlignment="Top"
-                            HorizontalAlignment="Center"
-                            Foreground="#f2635c"
-                            FontSize="16"
-                            FontWeight="Bold"
-                            Margin="0 5 0 5" FontFamily="Sitka Small" />
+                               VerticalAlignment="Top"
+                               HorizontalAlignment="Center"
+                               Foreground="#f2635c"
+                               FontSize="16"
+                               FontWeight="Bold"
+                               Margin="0 5 0 5" FontFamily="Sitka Small" />
 
 
                     <DockPanel>
                         <StackPanel Width="200">
                             <TextBlock Text="First Name:"
-                                        HorizontalAlignment="Left"
-                                        FontWeight="Bold"
-                                        Foreground="#f2635c"
-                                        FontSize="12"
-                                        FontFamily="Sitka Small"
-                                        Margin="10 0 0 0"/>
+                                       HorizontalAlignment="Left"
+                                       FontWeight="Bold"
+                                       Foreground="#f2635c"
+                                       FontSize="12"
+                                       FontFamily="Sitka Small"
+                                       Margin="10 0 0 0" />
 
-                            <ui:TextBox Text="{Binding SelectedAuthor.FirstName}"  Background="#f0f0f0" Margin="10 0 5 0"/>
+                            <ui:TextBox Text="{Binding SelectedAuthor.FirstName}" Background="#f0f0f0"
+                                        Margin="10 0 5 0" />
                             <TextBlock Text="Last Name:"
-                                HorizontalAlignment="Left"
-                                FontWeight="Bold"
-                                Foreground="#f2635c"
-                                FontSize="12"
-                                FontFamily="Sitka Small"
-                                Margin="10 5 0 0"/>
-                            <ui:TextBox Text="{Binding SelectedAuthor.LastName}"  Background="#f0f0f0" Margin="10 0 5 0"/>
+                                       HorizontalAlignment="Left"
+                                       FontWeight="Bold"
+                                       Foreground="#f2635c"
+                                       FontSize="12"
+                                       FontFamily="Sitka Small"
+                                       Margin="10 5 0 0" />
+                            <ui:TextBox Text="{Binding SelectedAuthor.LastName}" Background="#f0f0f0" Margin="10 0 5 0" />
                             <TextBlock Text="Birth Date:"
-                                HorizontalAlignment="Left"
-                                FontWeight="Bold"
-                                Foreground="#f2635c"
-                                FontSize="12"
-                                FontFamily="Sitka Small"
-                                Margin="10 5 0 0"/>
-                            <ui:TextBox Text="{Binding SelectedAuthor.BirthDate}"  Background="#f0f0f0" Margin="10 0 5 0"/>
+                                       HorizontalAlignment="Left"
+                                       FontWeight="Bold"
+                                       Foreground="#f2635c"
+                                       FontSize="12"
+                                       FontFamily="Sitka Small"
+                                       Margin="10 5 0 0" />
+                            <ui:TextBox Text="{Binding SelectedAuthor.BirthDate}" Background="#f0f0f0"
+                                        Margin="10 0 5 0" />
                         </StackPanel>
                         <StackPanel>
                             <TextBlock Text="Actions:"
-                                        HorizontalAlignment="Center"
-                                        FontWeight="Bold"
-                                        Foreground="#f2635c"
-                                        FontSize="12"
-                                        FontFamily="Sitka Small"
-                                        Margin="0"/>
+                                       HorizontalAlignment="Center"
+                                       FontWeight="Bold"
+                                       Foreground="#f2635c"
+                                       FontSize="12"
+                                       FontFamily="Sitka Small"
+                                       Margin="0" />
 
                             <ui:Button Content="New author"
                                        HorizontalAlignment="Center"
@@ -102,7 +104,7 @@
                                        PressedForeground="#e7d7ad"
                                        Icon="{ui:SymbolIcon Symbol=AddCircle20}"
                                        Command="{Binding NewAuthorCommand}" />
-                            
+
                             <ui:Button Content="Remove author"
                                        HorizontalAlignment="Center"
                                        HorizontalContentAlignment="Left"
@@ -128,28 +130,28 @@
 
                     <StackPanel>
                         <TextBlock Text="Authored Books:"
-                                HorizontalAlignment="Center"
-                                FontWeight="Bold"
-                                Foreground="#f2635c"
-                                FontSize="16"
-                                FontFamily="Sitka Small"
-                                Margin="10" />
+                                   HorizontalAlignment="Center"
+                                   FontWeight="Bold"
+                                   Foreground="#f2635c"
+                                   FontSize="16"
+                                   FontFamily="Sitka Small"
+                                   Margin="10" />
 
-                        <ui:DataGrid ItemsSource="{Binding SelectedAuthor.BookIsbn13s}" 
-                                   AutoGenerateColumns="False" 
-                                   CanUserAddRows="False" 
-                                   CanUserResizeColumns="False" 
-                                   HorizontalAlignment="Stretch" 
-                                   VerticalAlignment="Stretch"
-                                   ColumnWidth="*" 
-                                   IsReadOnly="True"
-                                   HeadersVisibility="Column"
-                                   Height="222"
-                                   Background="#504945"
-                                   Foreground="#e7d7ad">
+                        <ui:DataGrid ItemsSource="{Binding SelectedAuthor.BookIsbn13s}"
+                                     AutoGenerateColumns="False"
+                                     CanUserAddRows="False"
+                                     CanUserResizeColumns="False"
+                                     HorizontalAlignment="Stretch"
+                                     VerticalAlignment="Stretch"
+                                     ColumnWidth="*"
+                                     IsReadOnly="True"
+                                     HeadersVisibility="Column"
+                                     Height="222"
+                                     Background="#504945"
+                                     Foreground="#e7d7ad">
                             <DataGrid.Columns>
-                                <DataGridTextColumn Header="Title" Binding="{Binding Title}"/>
-                                <DataGridTextColumn Header="Publish Date" Binding="{Binding PublishDate}"/>
+                                <DataGridTextColumn Header="Title" Binding="{Binding Title}" />
+                                <DataGridTextColumn Header="Publish Date" Binding="{Binding PublishDate}" />
                             </DataGrid.Columns>
                         </ui:DataGrid>
 

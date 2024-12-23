@@ -9,24 +9,9 @@ namespace paperhands.ViewModel;
 public class AuthorViewModel : ViewModelBase
 {
     private readonly MainWindowViewModel? _mainWindowViewModel;
-    private BookstoreDbContext _dbContext => _mainWindowViewModel.dbContext;
-    public ObservableCollection<Book> Books { get; set; }
-    public ObservableCollection<Author> Authors { get; set; }
-    public ObservableCollection<Store> Stores { get; set; }
-    public DelegateCommand NewAuthorCommand { get; }
-    public DelegateCommand RemoveAuthorCommand { get; }
 
 
     private Author? _selectedAuthor;
-    public Author? SelectedAuthor
-    {
-        get => _selectedAuthor;
-        set
-        {
-            _selectedAuthor = value;
-            RaisePropertyChanged();
-        }
-    }
 
     public AuthorViewModel(MainWindowViewModel? mainWindowViewModel)
     {
@@ -51,10 +36,26 @@ public class AuthorViewModel : ViewModelBase
         }
     }
 
+    private BookstoreDbContext _dbContext => _mainWindowViewModel.dbContext;
+    public ObservableCollection<Book> Books { get; set; }
+    public ObservableCollection<Author> Authors { get; set; }
+    public ObservableCollection<Store> Stores { get; set; }
+    public DelegateCommand NewAuthorCommand { get; }
+    public DelegateCommand RemoveAuthorCommand { get; }
+
+    public Author? SelectedAuthor
+    {
+        get => _selectedAuthor;
+        set
+        {
+            _selectedAuthor = value;
+            RaisePropertyChanged();
+        }
+    }
+
     private void NewAuthor(object obj)
     {
         if (_mainWindowViewModel.IsDBConnected)
-        {
             try
             {
                 var author = new Author
@@ -68,41 +69,35 @@ public class AuthorViewModel : ViewModelBase
                 Authors.Add(author);
                 SelectedAuthor = author;
 
-                _mainWindowViewModel.ShowSuccessSnackbarMessage("Success!", $"Created new author, change name and birthdate");
+                _mainWindowViewModel.ShowSuccessSnackbarMessage("Success!",
+                    "Created new author, change name and birthdate");
             }
             catch (Exception e)
             {
                 _mainWindowViewModel.ShowErrorSnackbarMessage("Error", e.Message);
             }
-        }
         else
-        {
             _mainWindowViewModel.ShowErrorSnackbarMessage("Failure",
                 "You are not connected to database!");
-        }
     }
 
     private void RemoveAuthor(object obj)
     {
         if (_mainWindowViewModel.IsDBConnected)
-        {
             try
             {
                 _dbContext.Authors.Remove(SelectedAuthor);
                 _dbContext.SaveChanges();
                 Authors.Remove(SelectedAuthor);
 
-                _mainWindowViewModel.ShowSuccessSnackbarMessage($"Success!", $"Removed {SelectedAuthor}");
+                _mainWindowViewModel.ShowSuccessSnackbarMessage("Success!", $"Removed {SelectedAuthor}");
             }
             catch (Exception e)
             {
                 _mainWindowViewModel.ShowErrorSnackbarMessage("Error", e.Message);
             }
-        }
         else
-        {
             _mainWindowViewModel.ShowErrorSnackbarMessage("Failure",
                 "You are not connected to database!");
-        }
     }
 }

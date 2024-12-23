@@ -3,13 +3,60 @@ using Microsoft.EntityFrameworkCore;
 using paperhands.Command;
 using paperhands.Model.Context;
 using paperhands.Model.Entities;
-using Wpf.Ui.Controls;
 
 namespace paperhands.ViewModel;
 
 public class BookViewModel : ViewModelBase
 {
     private readonly MainWindowViewModel? _mainWindowViewModel;
+
+
+    private int _selectedAmountOfBooks;
+
+
+    private Book? _selectedBook;
+
+
+    private int _selectedGenre;
+
+    private string _selectedIsbn13;
+
+
+    private int _selectedLanguage;
+
+    private Store _selectedToStore;
+
+    public BookViewModel(MainWindowViewModel? mainWindowViewModel)
+    {
+        _mainWindowViewModel = mainWindowViewModel;
+
+        AddBookCommand = new DelegateCommand(AddBook);
+        RemoveBookCommand = new DelegateCommand(RemoveBook);
+
+        if (_mainWindowViewModel.IsDBConnected)
+        {
+            Books = new ObservableCollection<Book>(_dbContext.Books
+                .Include(b => b.Inventories)
+                .Include(b => b.Authors)
+                .Include(b => b.Publisher)
+                .ToList());
+
+            Authors = new ObservableCollection<Author>(_dbContext.Authors
+                .Include(b => b.BookIsbn13s)
+                .ToList());
+
+            Stores = new ObservableCollection<Store>(_dbContext.Stores.ToList());
+            Inventories = new ObservableCollection<Inventory>(_dbContext.Inventories.ToList());
+            Languages = new ObservableCollection<LanguagesLookup>(_dbContext.LanguagesLookups.ToList());
+            Genres = new ObservableCollection<Genre>(_dbContext.Genres.ToList());
+            Reviews = new ObservableCollection<Review>(_dbContext.Reviews.ToList());
+
+
+            SelectedBook = Books.FirstOrDefault();
+            SelectedAmountOfBooks = 1;
+        }
+    }
+
     private BookstoreDbContext _dbContext => _mainWindowViewModel.dbContext;
     public ObservableCollection<Book> Books { get; set; }
     public ObservableCollection<Inventory> Inventories { get; set; }
@@ -22,9 +69,6 @@ public class BookViewModel : ViewModelBase
     public DelegateCommand AddBookCommand { get; }
     public DelegateCommand RemoveBookCommand { get; }
 
-
-    private int _selectedLanguage;
-
     public int SelectedLanguage
     {
         get => _selectedLanguage;
@@ -35,8 +79,6 @@ public class BookViewModel : ViewModelBase
         }
     }
 
-
-    private int _selectedGenre;
     public int SelectedGenre
     {
         get => _selectedGenre;
@@ -47,8 +89,6 @@ public class BookViewModel : ViewModelBase
         }
     }
 
-
-    private Book? _selectedBook;
     public Book? SelectedBook
     {
         get => _selectedBook;
@@ -58,8 +98,6 @@ public class BookViewModel : ViewModelBase
             RaisePropertyChanged();
         }
     }
-
-    private string _selectedIsbn13;
 
     public string SelectedIsbn13
     {
@@ -71,9 +109,6 @@ public class BookViewModel : ViewModelBase
         }
     }
 
-
-
-    private int _selectedAmountOfBooks;
     public int SelectedAmountOfBooks
     {
         get => _selectedAmountOfBooks;
@@ -84,7 +119,6 @@ public class BookViewModel : ViewModelBase
         }
     }
 
-    private Store _selectedToStore;
     public Store SelectedToStore
     {
         get => _selectedToStore;
@@ -95,42 +129,9 @@ public class BookViewModel : ViewModelBase
         }
     }
 
-    public BookViewModel(MainWindowViewModel? mainWindowViewModel)
-    {
-        _mainWindowViewModel = mainWindowViewModel;
-
-        AddBookCommand = new DelegateCommand(AddBook);
-        RemoveBookCommand = new DelegateCommand(RemoveBook);
-
-        if (_mainWindowViewModel.IsDBConnected)
-        {
-            Books = new ObservableCollection<Book>(_dbContext.Books
-            .Include(b => b.Inventories)
-            .Include(b => b.Authors)
-            .Include(b => b.Publisher)
-            .ToList());
-
-            Authors = new ObservableCollection<Author>(_dbContext.Authors
-            .Include(b => b.BookIsbn13s)
-            .ToList());
-
-            Stores = new ObservableCollection<Store>(_dbContext.Stores.ToList());
-            Inventories = new ObservableCollection<Inventory>(_dbContext.Inventories.ToList());
-            Languages = new ObservableCollection<LanguagesLookup>(_dbContext.LanguagesLookups.ToList());
-            Genres = new ObservableCollection<Genre>(_dbContext.Genres.ToList());
-            Reviews = new ObservableCollection<Review>(_dbContext.Reviews.ToList());
-
-
-
-            SelectedBook = Books.FirstOrDefault();
-            SelectedAmountOfBooks = 1;
-        }
-    }
-
     private void AddBook(object obj)
     {
         if (_mainWindowViewModel.IsDBConnected)
-        {
             try
             {
                 var newBook = new Book
@@ -162,26 +163,20 @@ public class BookViewModel : ViewModelBase
 
                 SelectedBook = newBook;
 
-                _mainWindowViewModel.ShowSuccessSnackbarMessage("Success!", $"Added new book, edit information!");
-
-
+                _mainWindowViewModel.ShowSuccessSnackbarMessage("Success!", "Added new book, edit information!");
             }
             catch (Exception e)
             {
                 _mainWindowViewModel.ShowErrorSnackbarMessage("Error", e.Message);
             }
-        }
         else
-        {
             _mainWindowViewModel.ShowErrorSnackbarMessage("Failure",
                 "You are not connected to database!");
-        }
-    }    
-    
+    }
+
     private void RemoveBook(object obj)
     {
         if (_mainWindowViewModel.IsDBConnected)
-        {
             try
             {
                 var itemsToRemove = _dbContext.Inventories.Where(i => i.Isbn13 == SelectedBook.Isbn13).ToList();
@@ -189,7 +184,8 @@ public class BookViewModel : ViewModelBase
 
                 if (itemsToRemove.Any())
                 {
-                    _dbContext.Authors.Where(a => a.BookIsbn13s.Any(b => b.Isbn13 == SelectedBook.Isbn13)).ToList().ForEach(a => a.BookIsbn13s.Remove(a.BookIsbn13s.First(b => b.Isbn13 == SelectedBook.Isbn13)));
+                    _dbContext.Authors.Where(a => a.BookIsbn13s.Any(b => b.Isbn13 == SelectedBook.Isbn13)).ToList()
+                        .ForEach(a => a.BookIsbn13s.Remove(a.BookIsbn13s.First(b => b.Isbn13 == SelectedBook.Isbn13)));
                     _dbContext.Inventories.RemoveRange(itemsToRemove);
                     _dbContext.Reviews.RemoveRange(reviewsToRemove);
                 }
@@ -198,25 +194,21 @@ public class BookViewModel : ViewModelBase
 
                 _dbContext.SaveChanges();
 
-                Authors.Where(a => a.BookIsbn13s.Any(b => b.Isbn13 == SelectedBook.Isbn13)).ToList().ForEach(a => a.BookIsbn13s.Remove(a.BookIsbn13s.First(b => b.Isbn13 == SelectedBook.Isbn13)));
+                Authors.Where(a => a.BookIsbn13s.Any(b => b.Isbn13 == SelectedBook.Isbn13)).ToList().ForEach(a =>
+                    a.BookIsbn13s.Remove(a.BookIsbn13s.First(b => b.Isbn13 == SelectedBook.Isbn13)));
                 Reviews.Where(r => r.BookIsbn13 == SelectedBook.Isbn13).ToList().ForEach(r => Reviews.Remove(r));
                 Books.Remove(SelectedBook);
 
 
                 _mainWindowViewModel.ShowSuccessSnackbarMessage("Success!", $"Removed {SelectedBook}");
                 SelectedBook = Books.FirstOrDefault();
-
-
             }
             catch (Exception e)
             {
                 _mainWindowViewModel.ShowErrorSnackbarMessage("Error", e.Message);
             }
-        }
         else
-        {
             _mainWindowViewModel.ShowErrorSnackbarMessage("Failure",
                 "You are not connected to database!");
-        }
     }
 }

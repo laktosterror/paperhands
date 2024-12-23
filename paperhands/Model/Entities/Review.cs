@@ -1,6 +1,6 @@
 ﻿namespace paperhands.Model.Entities;
 
-public partial class Review
+public class Review
 {
     public long Id { get; set; }
 

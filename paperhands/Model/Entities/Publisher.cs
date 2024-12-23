@@ -1,6 +1,6 @@
 ﻿namespace paperhands.Model.Entities;
 
-public partial class Publisher
+public class Publisher
 {
     public long Id { get; set; }
 

@@ -12,10 +12,10 @@ namespace paperhands.ViewModel;
 public class MainWindowViewModel : ViewModelBase
 {
     private UserControl? _currentView;
-    private bool PreviousIsDBConnectedState;
+    public BookstoreDbContext dbContext;
     public bool IsDBConnected;
     public bool IsDBLoadedOnce;
-    public BookstoreDbContext dbContext;
+    private bool PreviousIsDBConnectedState;
 
     public MainWindowViewModel(ISnackbarService snackbarService)
     {
@@ -79,17 +79,21 @@ public class MainWindowViewModel : ViewModelBase
     {
         await CheckDBConnection();
 
-        if (IsDBConnected && !IsDBLoadedOnce )
+        if (IsDBConnected && !IsDBLoadedOnce)
         {
             IsDBLoadedOnce = true;
             await ReloadCurrentView();
         }
 
         else if (IsDBConnected && !PreviousIsDBConnectedState)
+        {
             ShowSuccessSnackbarMessage("Connected", "You are connected to the database again!");
+        }
 
         else if (!IsDBConnected && PreviousIsDBConnectedState)
+        {
             ShowErrorSnackbarMessage("Disconnected", "You are not connected to the database!");
+        }
     }
 
     private async Task CheckDBConnection()
@@ -123,6 +127,7 @@ public class MainWindowViewModel : ViewModelBase
         ConfigurationViewModel = new ConfigurationViewModel(this);
         CurrentView = new ConfigurationView(ConfigurationViewModel);
     }
+
     private void ShowAuthorView(object obj)
     {
         AuthorViewModel = new AuthorViewModel(this);
@@ -152,6 +157,7 @@ public class MainWindowViewModel : ViewModelBase
             ControlAppearance.Danger,
             new SymbolIcon(SymbolRegular.Warning24), TimeSpan.FromSeconds(5));
     }
+
     public async Task ReloadCurrentView()
     {
         switch (CurrentView)
@@ -173,6 +179,7 @@ public class MainWindowViewModel : ViewModelBase
                 break;
         }
     }
+
     private void ExitApplication(object obj)
     {
         dbContext.SaveChanges();
