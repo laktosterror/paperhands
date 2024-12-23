@@ -1,6 +1,6 @@
 ﻿namespace paperhands.Model.Entities;
 
-public class Store
+public partial class Store
 {
     public long Id { get; set; }
 

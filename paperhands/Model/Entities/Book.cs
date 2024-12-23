@@ -1,6 +1,6 @@
 ﻿namespace paperhands.Model.Entities;
 
-public class Book
+public partial class Book
 {
     public string Isbn13 { get; set; } = null!;
 

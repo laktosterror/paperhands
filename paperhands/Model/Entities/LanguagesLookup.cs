@@ -1,6 +1,6 @@
 ﻿namespace paperhands.Model.Entities;
 
-public class LanguagesLookup
+public partial class LanguagesLookup
 {
     public long Id { get; set; }
 

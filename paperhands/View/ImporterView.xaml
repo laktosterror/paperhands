@@ -46,7 +46,7 @@
                       Background="#f0f0f0"
                       ItemsSource="{Binding Stores}"
                       SelectedItem="{Binding SelectedFromStore}"
-                      DisplayMemberPath="Name" />
+                      DisplayMemberPath="Name"/>
 
             <TextBlock Text="Move To Store:"
                        VerticalAlignment="Top"
@@ -60,7 +60,7 @@
                       Background="#f0f0f0"
                       ItemsSource="{Binding Stores}"
                       SelectedItem="{Binding SelectedToStore}"
-                      DisplayMemberPath="Name" />
+                      DisplayMemberPath="Name"/>
 
             <TextBlock Text="Amount of Books:"
                        VerticalAlignment="Top"
@@ -81,7 +81,7 @@
                         LargeChange="10"
                         SmallChange="0"
                         Value="{Binding SelectedAmountOfBooks, Mode=TwoWay}" />
-
+                
                 <Label HorizontalAlignment="Right"
                        Content="{Binding SelectedAmountOfBooks, Mode=TwoWay}"
                        Foreground="#f0f0f0"
@@ -94,19 +94,19 @@
             <ui:Button Content="Move Book!"
                        HorizontalAlignment="Center"
                        HorizontalContentAlignment="Left"
-                       Margin="20"
-                       BorderThickness="2"
-                       Appearance="Transparent"
-                       FontSize="31"
+                        Margin="20"
+                        BorderThickness="2"
+                        Appearance="Transparent"
+                        FontSize="31"
                        FontFamily="Sitka Small"
-                       Height="55"
-                       Width="160"
-                       CornerRadius="5"
-                       Background="#32302f"
-                       Foreground="#ed8346"
-                       MouseOverBackground="#4a4442"
-                       PressedForeground="#e7d7ad"
-                       Icon="{ui:SymbolIcon Symbol=ArrowRight20}"
+                        Height="55"
+                        Width="160"
+                        CornerRadius="5"
+                        Background="#32302f"
+                        Foreground="#ed8346"
+                        MouseOverBackground="#4a4442"
+                        PressedForeground="#e7d7ad"
+                        Icon="{ui:SymbolIcon Symbol=ArrowRight20}"
                        Command="{Binding MoveBookCommand}" />
         </StackPanel>
     </Grid>

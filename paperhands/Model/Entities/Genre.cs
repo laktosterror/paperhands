@@ -1,6 +1,6 @@
 ﻿namespace paperhands.Model.Entities;
 
-public class Genre
+public partial class Genre
 {
     public long Id { get; set; }
 
