@@ -1,6 +1,6 @@
 ﻿namespace paperhands.Model.Entities;
 
-public partial class TitlarPerFörfattare
+public class TitlarPerFörfattare
 {
     public string AuthorName { get; set; } = null!;
 
